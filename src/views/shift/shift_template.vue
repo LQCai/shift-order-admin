@@ -25,18 +25,54 @@
                    v-if="permission.shift_template_delete"
                    @click="handleDelete">删 除
         </el-button>
+        <el-button type="success"
+                   size="small"
+                   plain
+                   v-if="userInfo.authority.includes('admin')"
+                   icon="el-icon-upload2"
+                   @click="handleImport">导入
+        </el-button>
       </template>
     </avue-crud>
+    <el-dialog title="班车数据导入"
+               append-to-body
+               :visible.sync="excelBox"
+               width="555px">
+      <avue-form :option="excelOption" v-model="excelForm" :upload-after="uploadAfter">
+      </avue-form>
+    </el-dialog>
   </basic-container>
 </template>
 
 <script>
   import {getList, getDetail, add, update, remove} from "@/api/shift/shift_template";
   import {mapGetters} from "vuex";
+  import {getToken} from "@/util/auth";
 
   export default {
     data() {
       return {
+        excelBox: false,
+        excelForm: {},
+        excelOption: {
+          submitBtn: false,
+          emptyBtn: false,
+          column: [
+            {
+              label: '模板上传',
+              prop: 'excelFile',
+              type: 'upload',
+              drag: true,
+              loadText: '模板上传中，请稍等',
+              span: 24,
+              propsHttp: {
+                res: 'data'
+              },
+              tip: '请上传 .xls,.xlsx 标准格式文件',
+              action: "/api/shift/shift-template/import-shift"
+            }
+          ]
+        },
         form: {},
         query: {},
         loading: true,
@@ -100,7 +136,7 @@
       };
     },
     computed: {
-      ...mapGetters(["permission"]),
+      ...mapGetters(["userInfo", "permission"]),
       permissionList() {
         return {
           addBtn: this.vaildData(this.permission.shift_template_add, false),
@@ -213,6 +249,18 @@
       },
       sizeChange(pageSize){
         this.page.pageSize = pageSize;
+      },
+      handleImport() {
+        this.excelBox = true;
+      },
+      uploadAfter(res, done, loading, column) {
+        window.console.log(column);
+        done();
+        this.excelBox = false;
+        this.refreshChange();
+      },
+      refreshChange() {
+        this.onLoad(this.page, this.query);
       },
       onLoad(page, params = {}) {
         this.loading = true;
