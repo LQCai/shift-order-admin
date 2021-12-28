@@ -55,6 +55,13 @@
                    icon="el-icon-download"
                    @click="handleExport">导出
         </el-button>
+        <el-button type="info"
+                   size="small"
+                   plain
+                   v-if="userInfo.authority.includes('admin')"
+                   icon="el-icon-user"
+                   @click="handleReview">审核
+        </el-button>
       </template>
       <template slot-scope="{row}"
                 slot="roleId">
@@ -99,19 +106,37 @@
         </template>
       </avue-form>
     </el-dialog>
+    <el-dialog title="用户审批"
+               append-to-body
+               :visible.sync="reviewVisible"
+               width="555px">
+
+      <div v-for="item in selectionList">
+        <a>姓名: {{ item.name }}; </a>
+        <a>工号: {{ item.code }}; </a>
+        <a>电话: {{ item.phone }} </a>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+            <el-button @click="reviewVisible = false">取 消</el-button>
+            <el-button type="danger" @click="submitReview(2)">拒 绝</el-button>
+            <el-button type="primary"
+                       @click="submitReview(1)">通 过</el-button>
+          </span>
+    </el-dialog>
   </basic-container>
 </template>
 
 <script>
-  import {
-    getList,
-    getUser,
-    remove,
-    update,
-    add,
-    grant,
-    resetPassword
-  } from "@/api/system/user";
+import {
+  getList,
+  getUser,
+  remove,
+  update,
+  add,
+  grant,
+  resetPassword, review
+} from "@/api/system/user";
   import {getRoleTree} from "@/api/system/role";
   import {mapGetters} from "vuex";
   import website from '@/config/website';
@@ -136,6 +161,7 @@
         }
       };
       return {
+        reviewVisible: false,
         form: {},
         search:{},
         roleBox: false,
@@ -298,12 +324,6 @@
               format: "yyyy-MM-dd hh:mm:ss",
               valueFormat: "yyyy-MM-dd hh:mm:ss",
               hide: true
-            },
-            {
-              label: "账号状态",
-              prop: "statusName",
-              hide: true,
-              display: false
             }
           ]
         },
@@ -531,6 +551,32 @@
       },
       refreshChange() {
         this.onLoad(this.page, this.query);
+      },
+      handleReview() {
+        if (this.selectionList.length === 0) {
+          this.$message.warning("请选择至少一条数据");
+          return;
+        }
+
+        const statusList = this.selectionList.map(item => item.status)
+        if (statusList.indexOf(1) !== -1 || statusList.indexOf(2) !== -1) {
+          this.$message.warning("请勿勾选非申请状态的数据");
+          return;
+        }
+
+        this.reviewVisible = true
+      },
+      submitReview(status) {
+        review(this.ids, status).then(res => {
+          this.onLoad(this.page);
+          this.$message({
+            type: "success",
+            message: "操作成功!"
+          });
+        }).catch(e => {
+          // ...
+        });
+        this.reviewVisible = false
       },
       onLoad(page, params = {}) {
         this.loading = true;

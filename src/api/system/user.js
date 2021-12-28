@@ -87,3 +87,14 @@ export const updatePassword = (oldPassword, newPassword, newPassword1) => {
   })
 }
 
+export const review = (userIds, status) => {
+  return request({
+    url: '/api/blade-user/review',
+    method: 'post',
+    params: {
+      userIds,
+      status
+    }
+  })
+}
+
