@@ -60,6 +60,12 @@
                 slot="roleId">
         <el-tag>{{row.roleName}}</el-tag>
       </template>
+      <template slot-scope="{row}"
+                slot="statusName">
+        <el-tag v-if="row.status === 0">{{row.statusName}}</el-tag>
+        <el-tag type="success" v-if="row.status === 1">{{row.statusName}}</el-tag>
+        <el-tag type="danger" v-if="row.status === 2">{{row.statusName}}</el-tag>
+      </template>
     </avue-crud>
     <el-dialog title="用户角色配置"
                append-to-body
@@ -224,6 +230,13 @@
                 message: "请输入用户姓名",
                 trigger: "blur"
               }]
+            },
+            {
+              label: "状态",
+              prop: "statusName",
+              addDisplay: false,
+              editDisplay: false,
+              slot: true
             },
             {
               label: "所属角色",
