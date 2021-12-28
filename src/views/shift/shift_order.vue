@@ -184,6 +184,16 @@
               }]
             },
             {
+              label: "预约有效次数",
+              prop: "activeOrderCount",
+              addDisplay: false
+            },
+            {
+              label: "预约总次数",
+              prop: "allOrderCount",
+              addDisplay: false
+            },
+            {
               label: "备注",
               prop: "remark",
               type: "textarea"
