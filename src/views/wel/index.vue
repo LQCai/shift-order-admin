@@ -3,13 +3,10 @@
     <el-col :span="24">
       <basic-container>
         <el-collapse v-model="activeNames" @change="handleChange">
-          <el-collapse-item title="拥有的核心功能" name="1">
-            <div>1.开发中...</div>
-          </el-collapse-item>
-          <el-collapse-item title="软件定制开发合作" name="2">
-            <div>1.接BladeX系列架构的定制服务</div>
-            <div>2.接3个月以内工期的react、vue、springboot、springcloud、app、小程序等软件定制服务</div>
-            <div>3.有意向请联系唯一指定微信:lqc0097</div>
+          <el-collapse-item title="帮助" name="1">
+            <div>有问题请联系 孔维信</div>
+            <div>微信：kwx43134</div>
+            <div>电话：13853145123</div>
           </el-collapse-item>
         </el-collapse>
       </basic-container>
