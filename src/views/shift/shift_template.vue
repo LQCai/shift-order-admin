@@ -126,6 +126,15 @@
               hide: true
             },
             {
+              label: "绑定字符",
+              prop: "bindKey",
+              search: true
+            },
+            {
+              label: "循环顺序",
+              prop: "bindKeySort"
+            },
+            {
               label: "备注",
               prop: "remark",
               type: "textarea"
