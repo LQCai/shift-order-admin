@@ -11,6 +11,7 @@
                @row-update="rowUpdate"
                @row-save="rowSave"
                @row-del="rowDel"
+               :search.sync="search"
                @search-change="searchChange"
                @search-reset="searchReset"
                @selection-change="selectionChange"
@@ -24,6 +25,13 @@
                    plain
                    v-if="permission.shift_order_delete"
                    @click="handleDelete">删 除
+        </el-button>
+        <el-button type="warning"
+                   size="small"
+                   plain
+                   v-if="userInfo.authority.includes('admin')"
+                   icon="el-icon-download"
+                   @click="handleExport">导出
         </el-button>
       </template>
       <template slot-scope="{row}" slot="menu">
@@ -62,6 +70,7 @@
   import {getList, getDetail, add, update, remove} from "@/api/shift/shift_order";
   import {getList as getDetailList} from "@/api/shift/shift_order_detail";
   import {mapGetters} from "vuex";
+  import {getToken} from "../../util/auth";
 
   export default {
     data() {
@@ -79,6 +88,7 @@
         optionDetail: {
           tip: false,
           searchMenuSpan: 6,
+          search:{},
           border: true,
           index: true,
           addBtn: false,
@@ -204,7 +214,7 @@
       };
     },
     computed: {
-      ...mapGetters(["permission"]),
+      ...mapGetters(["userInfo", "permission"]),
       permissionList() {
         return {
           addBtn: this.vaildData(this.permission.shift_order_add, false),
@@ -354,6 +364,15 @@
       },
       handleDrawerClose(hide) {
         hide();
+      },
+      handleExport() {
+        this.$confirm("是否导出班车预约数据?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning"
+        }).then(() => {
+          window.open(`/api/shift/shift-order/export?blade-auth=${getToken()}&date=${this.search.date}`);
+        });
       }
     }
   };
